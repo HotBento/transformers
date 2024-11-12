@@ -132,6 +132,7 @@ class TextGenerationPipeline(Pipeline):
         truncation=None,
         max_length=None,
         continue_final_message=None,
+        tools=None,
         **generate_kwargs,
     ):
         preprocess_params = {}
@@ -168,6 +169,9 @@ class TextGenerationPipeline(Pipeline):
 
         if continue_final_message is not None:
             preprocess_params["continue_final_message"] = continue_final_message
+
+        if tools is not None:
+            preprocess_params["tools"] = tools
 
         preprocess_params.update(generate_kwargs)
         forward_params = generate_kwargs
@@ -281,6 +285,7 @@ class TextGenerationPipeline(Pipeline):
         padding=None,
         max_length=None,
         continue_final_message=None,
+        tools=None,
         **generate_kwargs,
     ):
         # Only set non-None tokenizer kwargs, so as to rely on the tokenizer's defaults
@@ -300,6 +305,7 @@ class TextGenerationPipeline(Pipeline):
                 continue_final_message = prompt_text.messages[-1]["role"] == "assistant"
             inputs = self.tokenizer.apply_chat_template(
                 prompt_text.messages,
+                tools=tools,
                 add_generation_prompt=not continue_final_message,
                 continue_final_message=continue_final_message,
                 return_dict=True,
